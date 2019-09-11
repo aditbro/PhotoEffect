@@ -4,5 +4,5 @@ planning to use bazel as build dependency and use googletest as test framework <
 does not necessarily enforce TDD but at least put a test for something u make <br>
 
 ### how to run current version
-bazel build ...
+bazel build ... <br>
 bazel test ... --test_output=errors
