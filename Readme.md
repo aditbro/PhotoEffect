@@ -5,4 +5,4 @@ does not necessarily enforce TDD but at least put a test for something u make <b
 
 ### how to run current version
 bazel build ... <br>
-bazel test ... --test_output=errors
+bazel test ... --test_output=all
