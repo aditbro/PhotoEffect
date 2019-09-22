@@ -14,8 +14,8 @@ cc_library(
 
 cc_library(
     name = "image_loader",
-    srcs = ["load_bmp_image.cc"],
     hdrs = ["image_loader.h"],
+    srcs = ["load_bmp_image.cc"],
     visibility = ["//visibility:public"],
     deps = [":color", ":image"]
 )

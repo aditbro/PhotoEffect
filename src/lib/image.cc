@@ -1,4 +1,6 @@
+#include <exception>
 #include "image.h"
+
 
 Image::Image(char type, int width, int height){
     this->type = type;
@@ -10,12 +12,13 @@ Image::Image(char type, int width, int height){
 
 Color Image::getColorAt(int i, int j) {
     int index = (width * i) + j;
-    return img.at(index);
+    return img[index];
 }
 
 void Image::setColorAt(int i, int j, Color c) {
+    checkIndex(i, j);
     int index = (width * i) + j;
-    img.at(index) = c;
+    img[index] = c;
 }
 
 int Image::getWidth() {
@@ -28,4 +31,10 @@ int Image::getHeight() {
 
 char Image::getType() {
     return type;
+}
+
+void Image::checkIndex(int i, int j) {
+    if(i >= height || i < 0 || j >= width || j < 0) {
+        throw std::invalid_argument("index out of range");
+    }
 }

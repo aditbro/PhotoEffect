@@ -25,6 +25,7 @@ class Image {
         int width;
         int height;
         char type;
+        void checkIndex(int i, int j);
 };
 
 #endif

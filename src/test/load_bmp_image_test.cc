@@ -1,17 +1,20 @@
+#include <iostream>
 #include <memory>
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 #include "lib/image_loader.h"
 
-TEST(testBMPLoader, whenImageExistsAndValid) {
-    std::string image_path = "resource/bmp_img.bmp";
-    int width = 400;
-    int height = 300;
+TEST(testBMPLoader, whenGreenImageExistsAndValid) {
+    std::string image_path = "/Users/pt.gojekindonesia/Documents/PhotoEffect/src/test/resource/green.bmp";
+    int width = 1024;
+    int height = 768;
     char type = 1;
+    Color middleColor = Color(0, 153, 51);
 
     std::shared_ptr<Image> image = loadBMPImage(image_path);
 
-    EXPECT_EQ(image->getHeight(), height);
-    EXPECT_EQ(image->getWidth(), width);
-    EXPECT_EQ(image->getType(), type);
+    EXPECT_EQ(height, image->getHeight());
+    EXPECT_EQ(width, image->getWidth());
+    EXPECT_EQ(type, image->getType());
+    EXPECT_TRUE(middleColor == image->getColorAt(height/2, width/2));
 }
