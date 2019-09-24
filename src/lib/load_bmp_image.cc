@@ -1,11 +1,11 @@
 #include "color.h"
 #include "image_loader.h"
+#include "loader_utils.h"
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
 #include <string>
 
-int readInt(std::ifstream &file);
 void readImgColor(std::ifstream &file, std::shared_ptr<Image> &img);
 
 std::shared_ptr<Image> loadBMPImage(std::string filename) {
@@ -45,17 +45,6 @@ std::shared_ptr<Image> loadBMPImage(std::string filename) {
     std::shared_ptr<Image> img(new Image(type, width, height));
     readImgColor(file, img);
     return img;
-}
-
-int readInt(std::ifstream &file) {
-    char *integer = (char*) malloc(4);
-    for(int i = 0; i < 4; i++) {
-        char bytes;
-        file >> bytes;
-        integer[i] = bytes;
-    }
-
-    return *(int*) integer;
 }
 
 void readImgColor(std::ifstream &file, std::shared_ptr<Image> &img) {
