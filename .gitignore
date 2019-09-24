@@ -1,2 +1,8 @@
+# Builds
 src/bazel-*
+
+# MacOS
 .DS_STORE
+
+# IDEs and Editors
+.vscode

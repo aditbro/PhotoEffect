@@ -7,7 +7,17 @@
 /*
  * Image type code
  * BMP = 1
+ * Can we just use macros for this?
  */
+#define FORMAT_BMP 1
+#define FORMAT_RAW 2
+#define FORMAT_PBM 3
+#define FORMAT_PGM 4
+#define FORMAT_PPM 5
+
+#define CHANNEL_BGR 1
+#define CHANNEL_GRAY 2
+#define CHANNEL_MONO 3
 
 class Image {
     public:
