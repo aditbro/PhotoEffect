@@ -22,18 +22,22 @@ std::shared_ptr<Image> loadBMPImage(std::string filename) {
 
     while(file.get(byte)) {
         loc++;
+        std::cerr << "loc " << loc << "\t\tbyte " << +byte << "\n";
         if(loc + 1 == 11) {
             img_start_loc = readInt(file);
+            std::cerr << "loc 11" << "\t\tbyte " << img_start_loc << "\n";
             loc += 4;
         }
 
         if(loc + 1 == 19) {
             width = readInt(file);
+            std::cerr << "loc 19" << "\t\tbyte " << width << "\n";
             loc += 4;
         }
 
         if(loc + 1 == 23) {
             height = readInt(file);
+            std::cerr << "loc 23" << "\t\tbyte " << height << "\n";
             loc += 4;
         }
 

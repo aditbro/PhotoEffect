@@ -5,8 +5,8 @@
 #include "lib/image_loader.h"
 
 TEST(testBMPLoader, whenGreenImageExistsAndValid) {
-    std::string image_path = "/Users/pt.gojekindonesia/Documents/PhotoEffect/src/test/resource/green.bmp";
-    int width = 1024;
+    std::string image_path = "/Users/pt.gojekindonesia/Documents/PhotoEffect/src/test/resource/german_flag.bmp";
+    int width = 1280;
     int height = 768;
     char type = 1;
     Color middleColor = Color(0, 153, 51);

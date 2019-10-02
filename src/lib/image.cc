@@ -35,6 +35,6 @@ char Image::getType() {
 
 void Image::checkIndex(int i, int j) {
     if(i >= height || i < 0 || j >= width || j < 0) {
-        throw std::invalid_argument("index out of range");
+        throw std::invalid_argument(std::to_string(i) + " " + std::to_string(j) + " Image index out of range");
     }
 }
