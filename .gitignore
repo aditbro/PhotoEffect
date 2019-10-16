@@ -1,3 +1,5 @@
+.vscode
+
 src/bazel-*
 .DS_STORE
 src/toolchain

@@ -18,12 +18,14 @@ class Image {
 
         int getWidth();
         int getHeight();
+        int getPixelRange();
         char getType();
 
     private:
         std::vector<Color> img;
         int width;
         int height;
+        int pixel_range;
         char type;
         void checkIndex(int i, int j);
 };
