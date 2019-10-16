@@ -38,3 +38,7 @@ void Image::checkIndex(int i, int j) {
         throw std::invalid_argument(std::to_string(i) + " " + std::to_string(j) + " Image index out of range");
     }
 }
+
+int Image::getPixelRange() {
+    return this->pixel_range;
+}

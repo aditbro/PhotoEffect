@@ -19,3 +19,18 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [":color", ":image"]
 )
+
+cc_library(
+    name = "histogram",
+    hdrs = ["histogram.h"],
+    srcs = ["histogram.cc"],
+    visibility = ["//visibility:public"]
+)
+
+cc_library(
+    name = "operators",
+    hdrs = ["operators.h"],
+    srcs = ["operators.cc"],
+    visibility = ["//visibility:public"],
+    deps = [":color", ":image", ":histogram"]
+)
