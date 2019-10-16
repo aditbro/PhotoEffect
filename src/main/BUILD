@@ -16,3 +16,13 @@ cc_binary(
         "//lib:operators"
     ]
 )
+
+cc_binary(
+    name = "test_convolution",
+    srcs = ["test_convolution.cc"],
+    deps = [
+        "//lib:image_loader",
+        "//lib:image",
+        "//lib:operators"
+    ]
+)
