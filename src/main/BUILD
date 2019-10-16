@@ -16,3 +16,14 @@ cc_binary(
         "//lib:operators"
     ]
 )
+
+cc_binary(
+    name = "operators_test",
+    srcs = ["operators_test.cc"],
+    deps = [
+        "//lib:image",
+        "//lib:image_loader",
+        "//lib:histogram",
+        "//lib:operators"
+    ]
+)
