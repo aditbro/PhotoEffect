@@ -1,0 +1,1 @@
+emcc api.cc -s WASM=1 -O3 -o index.js -s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap', 'create_buffer', 'destroy_buffer', 'write_buffer', 'get_buffer']" -s ASSERTIONS=1
