@@ -48,29 +48,27 @@ std::shared_ptr<Image> convolute(std::shared_ptr<Image> &img, std::vector<int> f
                         new_b += (int) col.b * filter[k];
                         k++;
                     }
+                }
+                if (new_r > 255){
+                    new_r = 255;
+                } else if (new_r < 0) {
+                    new_r = 0;
+                }
 
-                    if (new_r > 255){
-                        new_r = 255;
-                    } else if (new_r < 0) {
-                        new_r = 0;
-                    }
+                if (new_g > 255){
+                    new_g = 255;
+                } else if (new_r < 0) {
+                    new_g = 0;
+                }
 
-                    if (new_g > 255){
-                        new_g = 255;
-                    } else if (new_r < 0) {
-                        new_g = 0;
-                    }
-
-                    if (new_b > 255){
-                        new_b = 255;
-                    } else if (new_r < 0) {
-                        new_b = 0;
-                    }
-
-                    new_img->setColorAt(i, j, Color((unsigned char) new_r, (unsigned char) new_g, (unsigned char) new_b));
+                if (new_b > 255){
+                    new_b = 255;
+                } else if (new_r < 0) {
+                    new_b = 0;
                 }
                 
-
+                std::cout << "Hasil Konvolusi" << new_r << " " << new_g << " " << new_b << std::endl;
+                new_img->setColorAt(i, j, Color((unsigned char) new_r, (unsigned char) new_g, (unsigned char) new_b));
             }
 
             // Color col = img->getColorAt(i, j);
