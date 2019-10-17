@@ -46,7 +46,6 @@ void invertImage(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst);
 void translateImage();
 void rotateImage();
 void flipImage();
-void getChannelHistogram(std::shared_ptr<Image> &img, char channel, Histogram* histogram);
 std::shared_ptr<Image> convolute(std::shared_ptr<Image> &img, std::vector<int> filter);
 
 #endif
