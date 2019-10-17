@@ -6,10 +6,6 @@
 #include "histogram.h"
 #include <memory>
 
-<<<<<<< HEAD
-void getChannelHistogram(std::shared_ptr<Image> &img, char channel, Histogram* histogram);
-std::shared_ptr<Image> convolute(std::shared_ptr<Image> &img, std::vector<int> filter);
-=======
 #define OPERATOR_PLUS 0
 #define OPERATOR_MIN 1
 #define OPERATOR_MUL 2
@@ -27,6 +23,19 @@ std::shared_ptr<Image> convolute(std::shared_ptr<Image> &img, std::vector<int> f
 #define CHAN_G 1
 #define CHAN_B 2
 #define CHAN_ALL 3
+
+#define HIGH_PASS_FILTER_1 0
+#define HIGH_PASS_FILTER_2 1
+#define HIGH_PASS_FILTER_3 2
+
+#define GRADIENT 0
+#define SECOND_DERIVATION 1
+#define LAPLACE 2
+#define LOG 3
+#define SOBEL 4
+#define PREWITT 5
+#define ROBERTS 6
+#define CANNY 7
 
 // Utility
 void getChannelHistogram(std::shared_ptr<Image> &img, int channel, Histogram* histogram);
@@ -50,6 +59,17 @@ void invertImage(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst);
 void translateImage();
 void rotateImage();
 void flipImage();
->>>>>>> 1b2669f1ae7802129755356be0b0c2db1dc01e9c
+
+// Convolution
+std::shared_ptr<Image> convolute(std::shared_ptr<Image> &img, std::vector<int> filter);
+std::shared_ptr<Image> median_convolute(std::shared_ptr<Image> &img, int filter_size);
+std::shared_ptr<Image> low_pass_convolute(std::shared_ptr<Image> &img, int filter_size);
+std::shared_ptr<Image> high_pass_convolute(std::shared_ptr<Image> &img, int filter);
+std::shared_ptr<Image> high_boost(std::shared_ptr<Image> &img, int alpha);
+// std::shared_ptr<Image> edge_detection(std::shared_ptr<Image> &img, int type);
+std::shared_ptr<Image> laplace(std::shared_ptr<Image> &img);
+std::shared_ptr<Image> gaussian_laplace(std::shared_ptr<Image> &img);
+std::shared_ptr<Image> sobel(std::shared_ptr<Image> &img, int c);
+std::shared_ptr<Image> prewitt(std::shared_ptr<Image> &img);
 
 #endif

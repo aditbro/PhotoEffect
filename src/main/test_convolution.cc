@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
 
     for (int i = 0; i < image->getHeight(); i++) {
         for (int j = 0; j < image->getWidth(); j++) {
-            image->setColorAt(i, j, Color(i, j, i));
+            image->setColorAt(i, j, Color(i*j, j+1, i+j));
         }
     }
 
@@ -25,14 +25,32 @@ int main(int argc, char** argv) {
 
     std::cout << image->getType() << " " << image->getWidth() << "x" << image->getHeight() << std::endl;
     
-    std::vector<int> filter = {1, 1, 1, 1, 1, 1, 1, 1, 1};
+    std::vector<int> filter = {100, 100, 100, 100, 100, 100, 100, 100, 100};
     std::shared_ptr<Image> conv_image = convolute(image, filter);
     
+    std::cout << "Conv Test" << std::endl;
     std::cout << conv_image->getType() << " " << conv_image->getWidth() << "x" << conv_image->getHeight() << std::endl;
-
     for (int i = 0; i < conv_image->getHeight(); i++) {
         for (int j = 0; j < conv_image->getWidth(); j++) {
             Color col = conv_image->getColorAt(i, j);
+            col.print();
+        }
+    }
+
+    std::cout << "Median Test" << std::endl;
+    std::shared_ptr<Image> med_image = median_convolute(image, 3);
+      for (int i = 0; i < med_image->getHeight(); i++) {
+        for (int j = 0; j < med_image->getWidth(); j++) {
+            Color col = med_image->getColorAt(i, j);
+            col.print();
+        }
+    }
+
+    std::cout << "High Pass Test" << std::endl;
+    std::shared_ptr<Image> high_image = high_pass_convolute(image, HIGH_PASS_FILTER_1);
+      for (int i = 0; i < high_image->getHeight(); i++) {
+        for (int j = 0; j < high_image->getWidth(); j++) {
+            Color col = high_image->getColorAt(i, j);
             col.print();
         }
     }

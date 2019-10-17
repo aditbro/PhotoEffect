@@ -21,8 +21,9 @@ cc_binary(
     name = "test_convolution",
     srcs = ["test_convolution.cc"],
     deps = [
-        "//lib:image_loader",
         "//lib:image",
+        "//lib:image_loader",
+        "//lib:operators"
     ]
 )
 
