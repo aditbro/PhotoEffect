@@ -71,5 +71,8 @@ std::shared_ptr<Image> laplace(std::shared_ptr<Image> &img);
 std::shared_ptr<Image> gaussian_laplace(std::shared_ptr<Image> &img);
 std::shared_ptr<Image> sobel(std::shared_ptr<Image> &img, int c);
 std::shared_ptr<Image> prewitt(std::shared_ptr<Image> &img);
+std::shared_ptr<Image> roberts(std::shared_ptr<Image> &img);
+std::shared_ptr<Image> convertToBiner(std::shared_ptr<Image> &img);
+std::shared_ptr<Image> canny(std::shared_ptr<Image> &img);
 
 #endif

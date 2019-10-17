@@ -27,10 +27,7 @@ void getChannelHistogram(std::shared_ptr<Image> &img, int channel, Histogram* hi
     }
 }
 
-<<<<<<< HEAD
 
-=======
->>>>>>> a55cc80e08b2d0c5ad18bd1bca91b4c05f091332
 void invertImage(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst) {
     if (src->getHeight() != dst->getHeight() && src->getWidth() != dst->getWidth()) throw std::exception();
     for (int i = 0; i < src->getHeight(); i++) {
@@ -659,4 +656,99 @@ std::shared_ptr<Image> sobel(std::shared_ptr<Image> &img, int c) {
 std::shared_ptr<Image> prewitt(std::shared_ptr<Image> &img){
     std::shared_ptr<Image> new_img = sobel(img, 1);
     return new_img;          
+}
+
+std::shared_ptr<Image> roberts(std::shared_ptr<Image> &img){
+    int width =  img->getWidth();
+    int height = img->getHeight();
+    int filter_size = 2;
+    int pad = filter_size/2;
+
+    std::shared_ptr<Image> new_img(new Image(img->getType(), width, height));
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            if (i >= height-pad || j >= width-pad) {
+                new_img->setColorAt(i, j, Color(0,0,0));
+            } else {
+                Color col1 = img->getColorAt(i,j);
+                Color col2 = img->getColorAt(i,j+1);
+                Color col3 = img->getColorAt(i+1,j);
+                Color col4 = img->getColorAt(i+1,j+1);
+
+                int new_r = (int) col1.r - col4.r + col2.r - col3.r;
+                int new_g = (int) col1.g - col4.g + col2.g - col3.g; 
+                int new_b   = (int) col1.b - col4.b + col2.b - col3.b;
+            
+
+                if (new_r > 255){
+                    new_r = 255;
+                } else if (new_r < 0) {
+                    new_r = 0;
+                }
+
+                if (new_g > 255){
+                    new_g = 255;
+                } else if (new_r < 0) {
+                    new_g = 0;
+                }
+
+                if (new_b > 255){
+                    new_b = 255;
+                } else if (new_r < 0) {
+                    new_b = 0;
+                }
+                
+                // std::cout << "Hasil Konvolusi" << new_r << " " << new_g << " " << new_b << std::endl;
+                new_img->setColorAt(i, j, Color((unsigned char) new_r, (unsigned char) new_g, (unsigned char) new_b));
+            }
+        }
+    }
+    return new_img;
+}
+
+std::shared_ptr<Image> convertToBiner(std::shared_ptr<Image> &img, int threshold) {
+    int width =  img->getWidth();
+    int height = img->getHeight();
+
+    std::shared_ptr<Image> new_img(new Image(img->getType(), width, height));
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            Color col = img->getColorAt(i,j);
+
+            int new_r;
+            int new_g; 
+            int new_b;
+        
+
+            if (col.r > threshold){
+                new_r = 255;
+            } else {
+                new_r = 0;
+            }
+
+            if (col.g > threshold){
+                new_g = 255;
+            } else {
+                new_g = 0;
+            }
+
+            if (col.b > threshold){
+                new_b = 255;
+            } else {
+                new_b = 0;
+            }
+            
+            // std::cout << "Hasil Konvolusi" << new_r << " " << new_g << " " << new_b << std::endl;
+            new_img->setColorAt(i, j, Color((unsigned char) new_r, (unsigned char) new_g, (unsigned char) new_b));
+        }
+    }
+    return new_img;
+}
+
+std::shared_ptr<Image> canny(std::shared_ptr<Image> &img) {
+    std::shared_ptr<Image> blurred_img = low_pass_convolute(img, 5);
+    std::shared_ptr<Image> processed_img = roberts(blurred_img);
+    std::shared_ptr<Image> new_img = convertToBiner(processed_img,128);
+
+    return new_img;
 }
