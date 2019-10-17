@@ -400,6 +400,8 @@ void bitLevelSlicing(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst, i
             dst->setColorAt(i, j, Color(new_r, new_g, new_b));
         }
     }
+}
+
 std::shared_ptr<Image> convolute(std::shared_ptr<Image> &img, std::vector<int> filter) {
     int width =  img->getWidth();
     int height = img->getHeight();
