@@ -2,6 +2,7 @@
 #include "image.h"
 #include "histogram.h"
 #include "operators.h"
+#include <cmath>
 #include <memory>
 #include <typeinfo>
 #include <cmath>
@@ -44,7 +45,7 @@ void convertColorOperator(std::shared_ptr<Image> &src, std::shared_ptr<Image> &d
         for (int j = 0; j < src->getWidth(); j++) {
             Color col = src->getColorAt(i, j);
             unsigned char new_g_value = (unsigned char) round(0.299 * col.r + 0.587 * col.g + 0.144 * col.b);
-            dst->setColorAt(i, j, Color(0, new_g_value, 0));
+            dst->setColorAt(i, j, Color(new_g_value, new_g_value, new_g_value));
         }
     }
 }
@@ -56,7 +57,7 @@ void arithmeticOperator(std::shared_ptr<Image> &src1, std::shared_ptr<Image> &sr
         for (int j = 0; j < src1->getWidth(); j++) {
             Color col1 = src1->getColorAt(i, j);
             Color col2 = src2->getColorAt(i, j);
-            unsigned char new_r, new_g, new_b;
+            unsigned int new_r, new_g, new_b;
 
             if (op == OPERATOR_PLUS) {
                 new_r = col1.r + col2.r;
@@ -107,7 +108,7 @@ void scalarOperator(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst, in
     for (int i = 0; i < src->getHeight(); i++) {
         for (int j = 0; j < src->getWidth(); j++) {
             Color col = src->getColorAt(i, j);
-            unsigned char new_r, new_g, new_b;
+            unsigned int new_r, new_g, new_b;
 
             if (op == OPERATOR_PLUS) {
                 new_r = col.r + scalar;
@@ -120,14 +121,14 @@ void scalarOperator(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst, in
                 new_b = col.b - scalar;
             }
             else if (op == OPERATOR_MUL) {
-                new_r = (unsigned char) round(col.r * scalar);
-                new_g = (unsigned char) round(col.g * scalar);
-                new_b = (unsigned char) round(col.b * scalar);
+                new_r = (unsigned int) round(col.r * scalar);
+                new_g = (unsigned int) round(col.g * scalar);
+                new_b = (unsigned int) round(col.b * scalar);
             }
             else if (op == OPERATOR_DIV) {
-                new_r = (unsigned char) round(col.r / scalar);
-                new_g = (unsigned char) round(col.g / scalar);
-                new_b = (unsigned char) round(col.b / scalar);
+                new_r = (unsigned int) round(col.r / scalar);
+                new_g = (unsigned int) round(col.g / scalar);
+                new_b = (unsigned int) round(col.b / scalar);
             }
 
             if (new_r < 0) {
@@ -199,28 +200,28 @@ void brightnessCorrection(std::shared_ptr<Image> &src, std::shared_ptr<Image> &d
     for (int i = 0; i < src->getHeight(); i++) {
         for (int j = 0; j < src->getWidth(); j++) {
             Color col = src->getColorAt(i, j);
-            unsigned char new_r = col.r * a + b;
+            unsigned int new_r = col.r * a + b;
             if (new_r < 0) {
                 new_r = 0;
             }
             if (new_r > 255) {
                 new_r = 255;
             }
-            char new_g = col.g * a + b;
+            int new_g = col.g * a + b;
             if (new_g < 0) {
                 new_g = 0;
             }
             if (new_g > 255) {
                 new_g = 255;
             }
-            char new_b = col.b * a + b;
+            int new_b = col.b * a + b;
             if (new_b < 0) {
                 new_b = 0;
             }
             if (new_b > 255) {
                 new_b = 255;
             }
-            dst->setColorAt(i, j, Color(new_r, new_g, new_b));
+            dst->setColorAt(i, j, Color((uint8_t)new_r, (uint8_t)new_g, (uint8_t)new_b));
         }
     }
 }
@@ -403,4 +404,67 @@ void bitLevelSlicing(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst, i
             dst->setColorAt(i, j, Color(new_r, new_g, new_b));
         }
     }
+}
+
+std::shared_ptr<Image> convolute(std::shared_ptr<Image> &img, std::vector<int> filter) {
+    int width =  img->getWidth();
+    int height = img->getHeight();
+    int filter_size = (int) sqrt(filter.size());
+    int pad = filter_size/2;
+
+    std::shared_ptr<Image> new_img(new Image(img->getType(), width, height));
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            if (i < pad || j < pad || i >= height-pad || j >= width-pad) {
+                new_img->setColorAt(i, j, img->getColorAt(i, j));
+            } else {
+                int new_r = 0;
+                int new_g = 0;
+                int new_b = 0;
+                int k = 0;
+
+                for (int m=-1*pad; m<=pad; m++){
+                    for (int n=-1*pad; n<=pad; n++){
+                        Color col = img->getColorAt(i+m,j+n);
+                        new_r += (int) col.r * filter[k];
+                        new_g += (int) col.g * filter[k]; 
+                        new_b += (int) col.b * filter[k];
+                        k++;
+                    }
+                }
+                if (new_r > 255){
+                    new_r = 255;
+                } else if (new_r < 0) {
+                    new_r = 0;
+                }
+
+                if (new_g > 255){
+                    new_g = 255;
+                } else if (new_r < 0) {
+                    new_g = 0;
+                }
+
+                if (new_b > 255){
+                    new_b = 255;
+                } else if (new_r < 0) {
+                    new_b = 0;
+                }
+                
+                std::cout << "Hasil Konvolusi" << new_r << " " << new_g << " " << new_b << std::endl;
+                new_img->setColorAt(i, j, Color((unsigned char) new_r, (unsigned char) new_g, (unsigned char) new_b));
+            }
+
+            // Color col = img->getColorAt(i, j);
+            // if (channel == 'b') {
+            //     histogram->addValueCount(col.b);
+            // }
+            // else if (channel == 'g') {
+            //     histogram->addValueCount(col.g);
+            // }
+            // else if (channel == 'r') {
+            //     histogram->addValueCount(col.r);
+            // }
+        }
+    }
+    return new_img;
 }

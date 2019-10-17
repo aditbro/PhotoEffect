@@ -21,8 +21,10 @@ class Image {
         int getPixelRange();
         char getType();
 
+        char* getVectorBegin();
+
     private:
-        std::vector<Color> img;
+        std::vector<char> img;
         int width;
         int height;
         int pixel_range;
