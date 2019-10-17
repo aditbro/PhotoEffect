@@ -22,7 +22,7 @@ class Image {
         char getType();
 
     private:
-        std::vector<Color> img;
+        std::vector<char> img;
         int width;
         int height;
         int pixel_range;

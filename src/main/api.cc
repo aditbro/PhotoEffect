@@ -3,6 +3,7 @@
 #include <emscripten/emscripten.h>
 
 extern "C" {
+    
     EMSCRIPTEN_KEEPALIVE
     uint8_t* create_buffer(int width, int height) {
         return (uint8_t*)malloc(width * height * 4 * sizeof(uint8_t));
