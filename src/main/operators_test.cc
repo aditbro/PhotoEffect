@@ -23,6 +23,8 @@ int main() {
     intensityLevelSlicing(image1, dst, 50, 75, 200, false);
     bitLevelSlicing(image1, dst, 0);
 
+    histogramEqualization(image1, dst);
+
     invertImage(image1, dst);
 
     return 0;

@@ -40,6 +40,8 @@ void colorRemapping(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst, in
 void contrastStretching(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst, int xa, int ya, int xb, int yb);
 void intensityLevelSlicing(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst, int a, int b, char highlight_value, bool preserve_background = true);
 void bitLevelSlicing(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst, int bit_plane);
+void histogramEqualization(std::shared_ptr<Image> &src, std::shared_ptr<Image>&dst);
+void histogramSpecification(std::shared_ptr<Image> &src, std::shared_ptr<Image>&dst, Histogram hist);
 
 // Image Transformation
 void invertImage(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst);
