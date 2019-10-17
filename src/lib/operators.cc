@@ -7,7 +7,9 @@
 #include <typeinfo>
 #include <numeric>
 #include <cmath>
+#include <algorithm>
 #include <math.h>
+
 
 void getChannelHistogram(std::shared_ptr<Image> &img, int channel, Histogram* histogram) {
     for (int i = 0; i < img->getHeight(); i++) {
@@ -25,6 +27,7 @@ void getChannelHistogram(std::shared_ptr<Image> &img, int channel, Histogram* hi
         }
     }
 }
+
 
 void invertImage(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst) {
     if (src->getHeight() != dst->getHeight() && src->getWidth() != dst->getWidth()) throw std::exception();
@@ -454,17 +457,290 @@ std::shared_ptr<Image> convolute(std::shared_ptr<Image> &img, std::vector<int> f
                 std::cout << "Hasil Konvolusi" << new_r << " " << new_g << " " << new_b << std::endl;
                 new_img->setColorAt(i, j, Color((unsigned char) new_r, (unsigned char) new_g, (unsigned char) new_b));
             }
+        }
+    }
+    return new_img;
+}
 
-            // Color col = img->getColorAt(i, j);
-            // if (channel == 'b') {
-            //     histogram->addValueCount(col.b);
-            // }
-            // else if (channel == 'g') {
-            //     histogram->addValueCount(col.g);
-            // }
-            // else if (channel == 'r') {
-            //     histogram->addValueCount(col.r);
-            // }
+unsigned char find_median(std::vector<unsigned char> vec){
+    size_t size = vec.size();
+
+    if (size == 0) {
+        return 0;  // Undefined, really.
+    } else {
+        std::sort(vec.begin(), vec.end());
+        if (size % 2 == 0){
+            return (unsigned char) ((int) vec[size / 2 - 1] + (int)vec[size / 2]) / 2;
+        } else {
+            return vec[size / 2];
+        }
+    }
+}
+
+std::shared_ptr<Image> low_pass_convolute(std::shared_ptr<Image> &img, int filter_size) {
+    int width =  img->getWidth();
+    int height = img->getHeight();
+    int pad = filter_size/2;
+
+    std::shared_ptr<Image> new_img(new Image(img->getType(), width, height));
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            if (i < pad || j < pad || i >= height-pad || j >= width-pad) {
+                new_img->setColorAt(i, j, img->getColorAt(i, j));
+            } else {
+                int new_r = 0;
+                int new_g = 0;
+                int new_b = 0;
+
+                for (int m=-1*pad; m<=pad; m++){
+                    for (int n=-1*pad; n<=pad; n++){
+                        Color col = img->getColorAt(i+m,j+n);
+                        new_r += (int) col.r;
+                        new_g += (int) col.g; 
+                        new_b += (int) col.b;
+                    }
+                }
+
+                new_r = floor(new_r/pow(filter_size,2));
+                new_g = floor(new_r/pow(filter_size,2));
+                new_b = floor(new_r/pow(filter_size,2));
+                
+                new_img->setColorAt(i, j, Color((unsigned char) new_r, (unsigned char) new_g, (unsigned char) new_b));
+            }
+        }
+    }
+    return new_img;
+}
+
+std::shared_ptr<Image> median_convolute(std::shared_ptr<Image> &img, int filter_size) {
+    int width =  img->getWidth();
+    int height = img->getHeight();
+    int pad = filter_size/2;
+
+    std::shared_ptr<Image> new_img(new Image(img->getType(), width, height));
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            if (i < pad || j < pad || i >= height-pad || j >= width-pad) {
+                new_img->setColorAt(i, j, img->getColorAt(i, j));
+            } else {
+                std::vector<unsigned char> r_vec;
+                std::vector<unsigned char> g_vec;
+                std::vector<unsigned char> b_vec;
+
+                for (int m=-1*pad; m<=pad; m++){
+                    for (int n=-1*pad; n<=pad; n++){
+                        Color col = img->getColorAt(i+m,j+n);
+                        r_vec.push_back(col.r);
+                        g_vec.push_back(col.g);
+                        b_vec.push_back(col.b);
+                    }
+                }
+                
+                new_img->setColorAt(i, j, Color(find_median(r_vec),find_median(g_vec), find_median(b_vec)));
+            }
+        }
+    }
+    return new_img;
+}
+
+std::shared_ptr<Image> high_pass_convolute(std::shared_ptr<Image> &img, int filter) {
+    std::vector <int> vec_filter;
+    if (filter == HIGH_PASS_FILTER_1){
+        vec_filter = {-1,-1,-1,-1,8,-1,-1,-1,-1};
+    } else if (filter == HIGH_PASS_FILTER_2){
+        vec_filter = {-1,-1,-1,-1,9,-1,-1,-1,-1};
+    } else if (filter == HIGH_PASS_FILTER_3){
+        vec_filter = {1,-2,1,-2,4,-2,1,-2,1};
+    }
+    
+    std::shared_ptr<Image> new_img = convolute(img, vec_filter);
+    return new_img;
+}
+
+std::shared_ptr<Image> unsharp_mask(std::shared_ptr<Image> &img, int filter_size) { 
+    std::shared_ptr<Image> lowpass_img = low_pass_convolute(img, filter_size);
+    
+    std::shared_ptr<Image> highpass_img(new Image(img->getType(), img->getWidth(), img->getHeight()));
+    arithmeticOperator(img, lowpass_img, highpass_img, OPERATOR_MIN);
+
+    std::shared_ptr<Image> sharpen_img(new Image(img->getType(), img->getWidth(), img->getHeight()));
+    arithmeticOperator(img, highpass_img, sharpen_img, OPERATOR_PLUS);
+    
+    return sharpen_img;
+}
+
+std::shared_ptr<Image> high_boost(std::shared_ptr<Image> &img, int alpha){
+    std::vector <int> vec_filter = {-1,-1,-1,-1, 9*alpha-1,-1,-1,-1,-1};
+    std::shared_ptr<Image> boosted_img = convolute(img, vec_filter);
+    
+    return boosted_img;
+}
+
+std::shared_ptr<Image> laplace(std::shared_ptr<Image> &img, int type){
+    std::vector <int> vec_filter = {0,1,0,1,-4,1,0,1,0};
+    std::shared_ptr<Image> new_img = convolute(img, vec_filter);
+    return new_img;          
+}
+
+std::shared_ptr<Image> gaussian_laplace(std::shared_ptr<Image> &img, int type){
+    std::vector <int> vec_filter = {0,0,-1,0,0,
+                                    0,-1,-2,-1,0,
+                                    -1,-2,16,-2,-1,
+                                    0,-2,-2,-1,0,
+                                    0,0,-1,0,0};
+    std::shared_ptr<Image> new_img = convolute(img, vec_filter);
+    return new_img;    
+}
+
+std::shared_ptr<Image> sobel(std::shared_ptr<Image> &img, int c) {
+    int width =  img->getWidth();
+    int height = img->getHeight();
+    std::vector <int> vec_filter_x = {-1,0,1,-1*c,0,c,-1,0,1};
+    std::vector <int> vec_filter_y = {1,c,1,0,0,0,-1,-1*c,-1};
+
+    int filter_size = (int) sqrt(vec_filter_x.size());
+    int pad = filter_size/2;
+    
+
+    std::shared_ptr<Image> new_img(new Image(img->getType(), width, height));
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            if (i < pad || j < pad || i >= height-pad || j >= width-pad) {
+                new_img->setColorAt(i, j, img->getColorAt(i, j));
+            } else {
+                int rx = 0;
+                int gx = 0;
+                int bx = 0;
+                int ry = 0;
+                int gy = 0;
+                int by = 0;
+                int k = 0;
+
+                for (int m=-1*pad; m<=pad; m++){
+                    for (int n=-1*pad; n<=pad; n++){
+                        Color col = img->getColorAt(i+m,j+n);
+                        rx += (int) col.r * vec_filter_x[k];
+                        gx += (int) col.g * vec_filter_x[k]; 
+                        bx += (int) col.b * vec_filter_x[k];
+
+                        ry += (int) col.r * vec_filter_y[k];
+                        gy += (int) col.g * vec_filter_y[k]; 
+                        by += (int) col.b * vec_filter_y[k];
+                        k++;
+                    }
+                }
+
+                int new_r = abs(rx) + abs(ry);
+                int new_g = abs(gx) + abs(gy);
+                int new_b = abs(bx) + abs(by);
+
+                if (new_r > 255){
+                    new_r = 255;
+                }
+
+                if (new_g > 255){
+                    new_g = 255;
+                }
+
+                if (new_b > 255){
+                    new_b = 255;
+                } 
+                
+                std::cout << "Hasil Konvolusi" << new_r << " " << new_g << " " << new_b << std::endl;
+                new_img->setColorAt(i, j, Color((unsigned char) new_r, (unsigned char) new_g, (unsigned char) new_b));
+            }
+        }
+    }
+    return new_img;
+}
+
+std::shared_ptr<Image> prewitt(std::shared_ptr<Image> &img){
+    std::shared_ptr<Image> new_img = sobel(img, 1);
+    return new_img;          
+}
+
+std::shared_ptr<Image> roberts(std::shared_ptr<Image> &img){
+    int width =  img->getWidth();
+    int height = img->getHeight();
+    int filter_size = 2;
+    int pad = filter_size/2;
+
+    std::shared_ptr<Image> new_img(new Image(img->getType(), width, height));
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            if (i >= height-pad || j >= width-pad) {
+                new_img->setColorAt(i, j, Color(0,0,0));
+            } else {
+                Color col1 = img->getColorAt(i,j);
+                Color col2 = img->getColorAt(i,j+1);
+                Color col3 = img->getColorAt(i+1,j);
+                Color col4 = img->getColorAt(i+1,j+1);
+
+                int new_r = (int) col1.r - col4.r + col2.r - col3.r;
+                int new_g = (int) col1.g - col4.g + col2.g - col3.g; 
+                int new_b   = (int) col1.b - col4.b + col2.b - col3.b;
+            
+
+                if (new_r > 255){
+                    new_r = 255;
+                } else if (new_r < 0) {
+                    new_r = 0;
+                }
+
+                if (new_g > 255){
+                    new_g = 255;
+                } else if (new_r < 0) {
+                    new_g = 0;
+                }
+
+                if (new_b > 255){
+                    new_b = 255;
+                } else if (new_r < 0) {
+                    new_b = 0;
+                }
+                
+                // std::cout << "Hasil Konvolusi" << new_r << " " << new_g << " " << new_b << std::endl;
+                new_img->setColorAt(i, j, Color((unsigned char) new_r, (unsigned char) new_g, (unsigned char) new_b));
+            }
+        }
+    }
+    return new_img;
+}
+
+std::shared_ptr<Image> convertToBiner(std::shared_ptr<Image> &img, int threshold) {
+    int width =  img->getWidth();
+    int height = img->getHeight();
+
+    std::shared_ptr<Image> new_img(new Image(img->getType(), width, height));
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            Color col = img->getColorAt(i,j);
+
+            int new_r;
+            int new_g; 
+            int new_b;
+        
+
+            if (col.r > threshold){
+                new_r = 255;
+            } else {
+                new_r = 0;
+            }
+
+            if (col.g > threshold){
+                new_g = 255;
+            } else {
+                new_g = 0;
+            }
+
+            if (col.b > threshold){
+                new_b = 255;
+            } else {
+                new_b = 0;
+            }
+            
+            // std::cout << "Hasil Konvolusi" << new_r << " " << new_g << " " << new_b << std::endl;
+            new_img->setColorAt(i, j, Color((unsigned char) new_r, (unsigned char) new_g, (unsigned char) new_b));
         }
     }
     return new_img;
@@ -507,4 +783,11 @@ void histogramEqualization(std::shared_ptr<Image> &src, std::shared_ptr<Image> &
             dst->setColorAt(i, j, Color(new_r, new_g, new_b));
         }
     }
+}
+std::shared_ptr<Image> canny(std::shared_ptr<Image> &img) {
+    std::shared_ptr<Image> blurred_img = low_pass_convolute(img, 5);
+    std::shared_ptr<Image> processed_img = roberts(blurred_img);
+    std::shared_ptr<Image> new_img = convertToBiner(processed_img,128);
+
+    return new_img;
 }
