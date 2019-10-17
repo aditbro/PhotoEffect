@@ -11,7 +11,7 @@ int main() {
 
     Histogram histogram_r(256);
     
-    getChannelHistogram(image, 'r', &histogram_r);
+    getChannelHistogram(image, CHAN_R, &histogram_r);
 
     std::vector<int> hv;
     hv = histogram_r.getHistogramVector();

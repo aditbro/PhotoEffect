@@ -1,5 +1,8 @@
 #include <memory>
 #include <vector>
+#include <array>
+#include <numeric>
+#include <math.h>
 #include "histogram.h"
 
 Histogram::Histogram(int pixel_range) {
@@ -25,7 +28,7 @@ int Histogram::getValueCount(int pixel_value) {
 std::vector<int> Histogram::getHistogramVector() {
     std::vector<int> hist_vector;
     for (int i = 0; i < this->range; i++) {
-    hist_vector.push_back(this->hist[i]);        
+        hist_vector.push_back(this->hist[i]);        
     }
 
     return hist_vector;
@@ -33,4 +36,21 @@ std::vector<int> Histogram::getHistogramVector() {
 
 int Histogram::getRange() {
     return this->range;
+}
+
+std::array<float, 3> Histogram::getHistogramStatistics() {
+    std::array<float, 3> stats;
+    std::vector<int> hist_vector = this->getHistogramVector();
+    
+    stats[0] = std::accumulate(hist_vector.begin(), hist_vector.end(), 0.0) / hist_vector.size();
+
+    float sq_diff = 0.0;
+    for (int i = 0; i < this->range; i++) {
+        sq_diff += pow(hist_vector[i] - stats[0], 2);
+    }
+
+    stats[1] = sq_diff / this->range;
+    stats[2] = (float) sqrt(stats[1]);
+
+    return stats;
 }

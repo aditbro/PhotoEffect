@@ -5,6 +5,7 @@
 #include <cmath>
 #include <memory>
 #include <typeinfo>
+#include <numeric>
 #include <cmath>
 #include <math.h>
 
@@ -30,7 +31,11 @@ void invertImage(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst) {
     for (int i = 0; i < src->getHeight(); i++) {
         for (int j = 0; j < src->getWidth(); j++) {
             Color col = src->getColorAt(i, j);
-            dst->setColorAt(i, j, Color(255 - col.r, 255 - col.g, 255 - col.b));
+            unsigned char new_r, new_g, new_b;
+            new_r = 255 - col.r;
+            new_g = 255 - col.g;
+            new_b = 255 - col.b;
+            dst->setColorAt(i, j, Color(new_r, new_g, new_b));
         }
     }
 }
@@ -66,14 +71,14 @@ void arithmeticOperator(std::shared_ptr<Image> &src1, std::shared_ptr<Image> &sr
                 new_b = col1.b - col2.b;
             }
             else if (op == OPERATOR_MUL) {
-                new_r = (char) round(col1.r * col2.r);
-                new_g = (char) round(col1.g * col2.g);
-                new_b = (char) round(col1.b * col2.b);
+                new_r = (unsigned char) round(col1.r * col2.r);
+                new_g = (unsigned char) round(col1.g * col2.g);
+                new_b = (unsigned char) round(col1.b * col2.b);
             }
             else if (op == OPERATOR_DIV) {
-                new_r = (char) round(col1.r / col2.r);
-                new_g = (char) round(col1.g / col2.g);
-                new_b = (char) round(col1.b / col2.b);
+                new_r = (unsigned char) round(col1.r / col2.r);
+                new_g = (unsigned char) round(col1.g / col2.g);
+                new_b = (unsigned char) round(col1.b / col2.b);
             }
 
             if (new_r < 0) {
@@ -117,14 +122,14 @@ void scalarOperator(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst, in
                 new_b = col.b - scalar;
             }
             else if (op == OPERATOR_MUL) {
-                new_r = (char) round(col.r * scalar);
-                new_g = (char) round(col.g * scalar);
-                new_b = (char) round(col.b * scalar);
+                new_r = (unsigned int) round(col.r * scalar);
+                new_g = (unsigned int) round(col.g * scalar);
+                new_b = (unsigned int) round(col.b * scalar);
             }
             else if (op == OPERATOR_DIV) {
-                new_r = (char) round(col.r / scalar);
-                new_g = (char) round(col.g / scalar);
-                new_b = (char) round(col.b / scalar);
+                new_r = (unsigned int) round(col.r / scalar);
+                new_g = (unsigned int) round(col.g / scalar);
+                new_b = (unsigned int) round(col.b / scalar);
             }
 
             if (new_r < 0) {
@@ -230,19 +235,19 @@ void colorRemapping(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst, in
             unsigned char new_r, new_g, new_b;
 
             if (func == FUNC_LOG) {
-                new_r = (char) round(c * log((float) (1 + col.r)));
-                new_g = (char) round(c * log((float) (1 + col.g)));
-                new_b = (char) round(c * log((float) (1 + col.b)));
+                new_r = (unsigned char) round(c * log((float) (1 + col.r)));
+                new_g = (unsigned char) round(c * log((float) (1 + col.g)));
+                new_b = (unsigned char) round(c * log((float) (1 + col.b)));
             }
             else if (func == FUNC_EXP) {
-                new_r = (char) round(c * exp((float)col.r));
-                new_g = (char) round(c * exp((float)col.g));
-                new_b = (char) round(c * exp((float)col.b));
+                new_r = (unsigned char) round(c * exp((float)col.r));
+                new_g = (unsigned char) round(c * exp((float)col.g));
+                new_b = (unsigned char) round(c * exp((float)col.b));
             }
             else if (func == FUNC_POW) {
-                new_r = (char) round(c * pow((float)col.r, gamma));
-                new_g = (char) round(c * pow((float)col.g, gamma));
-                new_b = (char) round(c * pow((float)col.b, gamma));
+                new_r = (unsigned char) round(c * pow((float)col.r, gamma));
+                new_g = (unsigned char) round(c * pow((float)col.g, gamma));
+                new_b = (unsigned char) round(c * pow((float)col.b, gamma));
             }
 
             if (new_r < 0) {
@@ -346,16 +351,16 @@ void intensityLevelSlicing(std::shared_ptr<Image> &src, std::shared_ptr<Image> &
                     new_r = 0;
                 }
             }
-            if (col.r >= a && col.r <= b) {
+            if (col.g >= a && col.g <= b) {
                 new_r = highlight_value;
             }
             else {
                 if (!preserve_background) {
-                    new_r = 0;
+                    new_g = 0;
                 }
             }
-            if (col.r >= a && col.r <= b) {
-                new_r = highlight_value;
+            if (col.b >= a && col.b <= b) {
+                new_b = highlight_value;
             }
             else {
                 if (!preserve_background) {
@@ -463,4 +468,43 @@ std::shared_ptr<Image> convolute(std::shared_ptr<Image> &img, std::vector<int> f
         }
     }
     return new_img;
+}
+
+void histogramEqualization(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst) {
+    if (src->getHeight() != dst->getHeight() && src->getWidth() != dst->getWidth()) throw std::exception();
+    int img_size = src->getHeight() * src->getWidth();
+    Histogram histogram_r(256);
+    Histogram histogram_g(256);
+    Histogram histogram_b(256);
+    getChannelHistogram(src, CHAN_R, &histogram_r);
+    getChannelHistogram(src, CHAN_G, &histogram_g);
+    getChannelHistogram(src, CHAN_B, &histogram_b);
+
+    std::vector<int> hv_r = histogram_r.getHistogramVector();
+    std::vector<int> hv_g = histogram_g.getHistogramVector();
+    std::vector<int> hv_b = histogram_b.getHistogramVector();
+
+    for (int i = 0; i < histogram_r.getRange(); i++) {
+        hv_r[i] = std::accumulate(hv_r.begin(), hv_r.begin() + i, 0.0);
+        hv_g[i] = std::accumulate(hv_g.begin(), hv_g.begin() + i, 0.0);
+        hv_b[i] = std::accumulate(hv_b.begin(), hv_b.begin() + i, 0.0);
+    }
+
+    for (int i = 0; i < histogram_r.getRange(); i++) {
+        hv_r[i] = (int) round((hv_r[i] / img_size) * 256);
+        hv_g[i] = (int) round((hv_g[i] / img_size) * 256);
+        hv_b[i] = (int) round((hv_b[i] / img_size) * 256);
+    }
+
+    for (int i = 0; i < src->getHeight(); i++) {
+        for (int j = 0; j < src->getWidth(); j++) {
+            Color col = src->getColorAt(i, j);
+            unsigned int new_r, new_g, new_b;
+            new_r = (unsigned int) hv_r[col.r];
+            new_g = (unsigned int) hv_g[col.g];
+            new_b = (unsigned int) hv_b[col.b];
+
+            dst->setColorAt(i, j, Color(new_r, new_g, new_b));
+        }
+    }
 }
