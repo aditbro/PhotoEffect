@@ -7,18 +7,23 @@ Image::Image(char type, int width, int height){
     this->width = width;
     this->height = height;
 
-    img.reserve(width * height);
+    img.reserve(width * height * 4);
 }
 
 Color Image::getColorAt(int i, int j) {
-    int index = (width * i) + j;
-    return img[index];
+    int index = (width * 4 * i) + j * 4;
+    char r = img[index];
+    char g = img[index+1];
+    char b = img[index+2];
+    return Color(r,g,b);
 }
 
 void Image::setColorAt(int i, int j, Color c) {
     checkIndex(i, j);
-    int index = (width * i) + j;
-    img[index] = c;
+    int index = (width * 4 * i) + j * 4;
+    img[index] = c.r;
+    img[index+1] = c.g;
+    img[index+2] = c.b;
 }
 
 int Image::getWidth() {
@@ -41,4 +46,8 @@ void Image::checkIndex(int i, int j) {
 
 int Image::getPixelRange() {
     return this->pixel_range;
+}
+
+char* Image::getVectorBegin() {
+    return this->img.data();
 }

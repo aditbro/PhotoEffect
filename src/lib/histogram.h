@@ -2,6 +2,7 @@
 #define HISTOGRAM_H
 
 #include <vector>
+#include <array>
 
 class Histogram {
     public:
@@ -12,6 +13,8 @@ class Histogram {
         int getValueCount(int pixel_value);
         std::vector<int> getHistogramVector();
         int getRange();
+        
+        std::array<float, 3> getHistogramStatistics();
     
     private:
         int range;
