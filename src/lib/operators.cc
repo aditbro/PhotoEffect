@@ -53,7 +53,7 @@ void arithmeticOperator(std::shared_ptr<Image> &src1, std::shared_ptr<Image> &sr
         for (int j = 0; j < src1->getWidth(); j++) {
             Color col1 = src1->getColorAt(i, j);
             Color col2 = src2->getColorAt(i, j);
-            unsigned int new_r, new_g, new_b;
+            unsigned char new_r, new_g, new_b;
 
             if (op == OPERATOR_PLUS) {
                 new_r = col1.r + col2.r;
@@ -104,7 +104,7 @@ void scalarOperator(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst, in
     for (int i = 0; i < src->getHeight(); i++) {
         for (int j = 0; j < src->getWidth(); j++) {
             Color col = src->getColorAt(i, j);
-            unsigned int new_r, new_g, new_b;
+            unsigned char new_r, new_g, new_b;
 
             if (op == OPERATOR_PLUS) {
                 new_r = col.r + scalar;
@@ -155,7 +155,7 @@ void booleanOperator(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst, i
     for (int i = 0; i < src->getHeight(); i++) {
         for (int j = 0; j < src->getWidth(); j++) {
             Color col = src->getColorAt(i, j);
-            char new_r, new_g, new_b;
+            unsigned char new_r, new_g, new_b;
 
             if (op == OPERATOR_NOT) {
                 new_r = !col.r * 255;
@@ -174,7 +174,7 @@ void booleanOperator(std::shared_ptr<Image> &src1, std::shared_ptr<Image> &src2,
         for (int j = 0; j < src1->getWidth(); j++) {
             Color col1 = src1->getColorAt(i, j);
             Color col2 = src2->getColorAt(i, j);
-            char new_r, new_g, new_b;
+            unsigned char new_r, new_g, new_b;
 
             if (op == OPERATOR_AND) {
                 new_r = col1.r & col2.r;
@@ -196,21 +196,21 @@ void brightnessCorrection(std::shared_ptr<Image> &src, std::shared_ptr<Image> &d
     for (int i = 0; i < src->getHeight(); i++) {
         for (int j = 0; j < src->getWidth(); j++) {
             Color col = src->getColorAt(i, j);
-            unsigned int new_r = col.r * a + b;
+            unsigned char new_r = col.r * a + b;
             if (new_r < 0) {
                 new_r = 0;
             }
             if (new_r > 255) {
                 new_r = 255;
             }
-            int new_g = col.g * a + b;
+            unsigned char new_g = col.g * a + b;
             if (new_g < 0) {
                 new_g = 0;
             }
             if (new_g > 255) {
                 new_g = 255;
             }
-            int new_b = col.b * a + b;
+            unsigned char new_b = col.b * a + b;
             if (new_b < 0) {
                 new_b = 0;
             }
@@ -227,7 +227,7 @@ void colorRemapping(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst, in
     for (int i = 0; i < src->getHeight(); i++) {
         for (int j = 0; j < src->getWidth(); j++) {
             Color col = src->getColorAt(i, j);
-            char new_r, new_g, new_b;
+            unsigned char new_r, new_g, new_b;
 
             if (func == FUNC_LOG) {
                 new_r = (char) round(c * log((float) (1 + col.r)));
@@ -276,7 +276,7 @@ void contrastStretching(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst
     for (int i = 0; i < src->getHeight(); i++) {
         for (int j = 0; j < src->getWidth(); j++) {
             Color col = src->getColorAt(i, j);
-            char new_r, new_g, new_b;
+            unsigned char new_r, new_g, new_b;
 
             if (col.g < xa) {
                 new_g = alpha * col.g;
@@ -336,7 +336,7 @@ void intensityLevelSlicing(std::shared_ptr<Image> &src, std::shared_ptr<Image> &
     for (int i = 0; i < src->getHeight(); i++) {
         for (int j = 0; j < src->getWidth(); j++) {
             Color col = src->getColorAt(i, j);
-            char new_r, new_g, new_b;
+            unsigned char new_r, new_g, new_b;
 
             if (col.r >= a && col.r <= b) {
                 new_r = highlight_value;
@@ -392,7 +392,7 @@ void bitLevelSlicing(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst, i
     for (int i = 0; i < src->getHeight(); i++) {
         for (int j = 0; j < src->getWidth(); j++) {
             Color col = src->getColorAt(i, j);
-            char new_r, new_g, new_b;
+            unsigned char new_r, new_g, new_b;
             new_r = ((col.r >> bit_plane) & 1) == 1 ? 255 : 0;
             new_g = ((col.g >> bit_plane) & 1) == 1 ? 255 : 0;
             new_b = ((col.b >> bit_plane) & 1) == 1 ? 255 : 0;
@@ -414,10 +414,10 @@ std::shared_ptr<Image> convolute(std::shared_ptr<Image> &img, std::vector<int> f
             if (i < pad || j < pad || i >= height-pad || j >= width-pad) {
                 new_img->setColorAt(i, j, img->getColorAt(i, j));
             } else {
-                int new_r = 0;
-                int new_g = 0;
-                int new_b = 0;
-                int k = 0;
+                unsigned int new_r = 0;
+                unsigned int new_g = 0;
+                unsigned int new_b = 0;
+                unsigned int k = 0;
 
                 for (int m=-1*pad; m<=pad; m++){
                     for (int n=-1*pad; n<=pad; n++){

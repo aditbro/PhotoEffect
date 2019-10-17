@@ -3,7 +3,13 @@ const api = {
     image_brightness_correction: Module.cwrap('image_brightness_correction', 'number', ['number', 'number']),
     image_invert: Module.cwrap('image_invert', null, null),
     image_convert_color: Module.cwrap('image_convert_color', null, null),
-    image_scalar_operator: Module.cwrap('image_scalar_operator', null, ['number', 'number'])
+    image_scalar_operator: Module.cwrap('image_scalar_operator', null, ['number', 'number']),
+    image_scalar_boolean_operator: Module.cwrap('image_scalar_boolean_operator', null, ['number']),
+    image_color_remapping: Module.cwrap('image_color_remapping', null, ['number', 'number', 'number']),
+    image_contrast_stretching: Module.cwrap('image_contrast_stretching', null, ['number', 'number', 'number', 'number']),
+    image_intensity_slice: Module.cwrap('image_intensity_slice', null, ['number', 'number', 'number', 'number']),
+    image_bit_slice: Module.cwrap('image_bit_slice', null, ['number']),
+    image_edge_detect: Module.cwrap('image_bit_slice', null),
 };
 
 document.getElementById("selector").addEventListener("change", function() {
