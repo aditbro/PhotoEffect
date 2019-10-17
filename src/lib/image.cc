@@ -47,3 +47,7 @@ void Image::checkIndex(int i, int j) {
 int Image::getPixelRange() {
     return this->pixel_range;
 }
+
+char* Image::getVectorBegin() {
+    return this->img.data();
+}

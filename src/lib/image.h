@@ -21,6 +21,8 @@ class Image {
         int getPixelRange();
         char getType();
 
+        char* getVectorBegin();
+
     private:
         std::vector<char> img;
         int width;

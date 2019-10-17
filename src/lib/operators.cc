@@ -40,8 +40,8 @@ void convertColorOperator(std::shared_ptr<Image> &src, std::shared_ptr<Image> &d
     for (int i = 0; i < src->getHeight(); i++) {
         for (int j = 0; j < src->getWidth(); j++) {
             Color col = src->getColorAt(i, j);
-            char new_g_value = (char) round(0.299 * col.r + 0.587 * col.g + 0.144 * col.b);
-            dst->setColorAt(i, j, Color(0, new_g_value, 0));
+            unsigned char new_g_value = (unsigned char) round(0.299 * col.r + 0.587 * col.g + 0.144 * col.b);
+            dst->setColorAt(i, j, Color(new_g_value, new_g_value, new_g_value));
         }
     }
 }
@@ -53,7 +53,7 @@ void arithmeticOperator(std::shared_ptr<Image> &src1, std::shared_ptr<Image> &sr
         for (int j = 0; j < src1->getWidth(); j++) {
             Color col1 = src1->getColorAt(i, j);
             Color col2 = src2->getColorAt(i, j);
-            char new_r, new_g, new_b;
+            unsigned int new_r, new_g, new_b;
 
             if (op == OPERATOR_PLUS) {
                 new_r = col1.r + col2.r;
@@ -104,7 +104,7 @@ void scalarOperator(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst, in
     for (int i = 0; i < src->getHeight(); i++) {
         for (int j = 0; j < src->getWidth(); j++) {
             Color col = src->getColorAt(i, j);
-            char new_r, new_g, new_b;
+            unsigned int new_r, new_g, new_b;
 
             if (op == OPERATOR_PLUS) {
                 new_r = col.r + scalar;
@@ -196,28 +196,28 @@ void brightnessCorrection(std::shared_ptr<Image> &src, std::shared_ptr<Image> &d
     for (int i = 0; i < src->getHeight(); i++) {
         for (int j = 0; j < src->getWidth(); j++) {
             Color col = src->getColorAt(i, j);
-            char new_r = col.r * a + b;
+            unsigned int new_r = col.r * a + b;
             if (new_r < 0) {
                 new_r = 0;
             }
             if (new_r > 255) {
                 new_r = 255;
             }
-            char new_g = col.g * a + b;
+            int new_g = col.g * a + b;
             if (new_g < 0) {
                 new_g = 0;
             }
             if (new_g > 255) {
                 new_g = 255;
             }
-            char new_b = col.b * a + b;
+            int new_b = col.b * a + b;
             if (new_b < 0) {
                 new_b = 0;
             }
             if (new_b > 255) {
                 new_b = 255;
             }
-            dst->setColorAt(i, j, Color(new_r, new_g, new_b));
+            dst->setColorAt(i, j, Color((uint8_t)new_r, (uint8_t)new_g, (uint8_t)new_b));
         }
     }
 }

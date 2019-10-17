@@ -1,26 +1,35 @@
 #include <stdlib.h>
 #include <iostream>
+#include "../lib/image.h"
+#include "../lib/operators.h"
 #include <emscripten/emscripten.h>
 
 extern "C" {
-    
+    std::shared_ptr<Image> img;
+
     EMSCRIPTEN_KEEPALIVE
-    uint8_t* create_buffer(int width, int height) {
-        return (uint8_t*)malloc(width * height * 4 * sizeof(uint8_t));
+    uint8_t* create_image(int width, int height) {
+        img = std::shared_ptr<Image>(new Image(1, width, height));
+        return (uint8_t*)img->getVectorBegin();
     }
 
     EMSCRIPTEN_KEEPALIVE
-    void destroy_buffer(uint8_t* p) {
-        free(p);
+    void image_brightness_correction(int alpha, int constant) {
+        brightnessCorrection(img, img, constant, alpha);
     }
 
     EMSCRIPTEN_KEEPALIVE
-    void write_buffer(uint8_t* buff, uint32_t loc, uint8_t val) {
-        buff[loc] = val;
+    void image_invert() {
+        invertImage(img, img);
     }
 
     EMSCRIPTEN_KEEPALIVE
-    uint8_t get_buffer(uint8_t* buff, uint32_t loc) {
-        return buff[loc];
+    void image_convert_color() {
+        convertColorOperator(img, img);
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void image_scalar_operator(char operation, int scalar) {
+        scalarOperator(img, img, scalar, operation);
     }
 }
