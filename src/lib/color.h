@@ -20,7 +20,7 @@ class Color {
         }
 
         void print() {
-            std::cout << +r << " " << +g << " " << +b << "\n";
+            std::cout << +r << " " << +g << " " << +b << " ";
         }
 };
 

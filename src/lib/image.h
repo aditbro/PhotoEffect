@@ -22,7 +22,9 @@ class Image {
         char getType();
 
         char* getVectorBegin();
+        char* getVectorEnd();
 
+        void copyImageVector(std::shared_ptr<Image>);
     private:
         std::vector<char> img;
         int width;

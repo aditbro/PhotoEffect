@@ -17,8 +17,8 @@ emcc -std=c++11 \
         'image_color_remapping',\
         'image_contrast_stretching',\
         'image_intensity_slice',\
-        'image_bit_slice',\
-        'image_edge_detect'\
+        'image_edge_detect',\
+        'image_bit_slice'\
     ]" \
     -s ASSERTIONS=1 --emrun \
     -s "BINARYEN_TRAP_MODE='clamp'"

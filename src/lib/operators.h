@@ -69,12 +69,18 @@ std::shared_ptr<Image> low_pass_convolute(std::shared_ptr<Image> &img, int filte
 std::shared_ptr<Image> high_pass_convolute(std::shared_ptr<Image> &img, int filter);
 std::shared_ptr<Image> high_boost(std::shared_ptr<Image> &img, int alpha);
 // std::shared_ptr<Image> edge_detection(std::shared_ptr<Image> &img, int type);
+std::shared_ptr<Image> unsharp_mask(std::shared_ptr<Image> &img, int filter_size);
 std::shared_ptr<Image> laplace(std::shared_ptr<Image> &img);
 std::shared_ptr<Image> gaussian_laplace(std::shared_ptr<Image> &img);
 std::shared_ptr<Image> sobel(std::shared_ptr<Image> &img, int c);
 std::shared_ptr<Image> prewitt(std::shared_ptr<Image> &img);
 std::shared_ptr<Image> roberts(std::shared_ptr<Image> &img);
-std::shared_ptr<Image> convertToBiner(std::shared_ptr<Image> &img);
-std::shared_ptr<Image> canny(std::shared_ptr<Image> &img);
+std::shared_ptr<Image> convertToBiner(std::shared_ptr<Image> &img, int threshold);
+std::shared_ptr<Image> canny(std::shared_ptr<Image> &img, int threshold);
+std::shared_ptr<Image> gaussian_blur(std::shared_ptr<Image> &img);
 
+
+std::shared_ptr<Image> translate(std::shared_ptr<Image> &img, int di, int dj);
+std::shared_ptr<Image> rotate(std::shared_ptr<Image> &img, int deg);
+std::shared_ptr<Image> flip(std::shared_ptr<Image> &img, bool isX, bool isY);
 #endif

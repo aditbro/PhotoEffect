@@ -51,3 +51,11 @@ int Image::getPixelRange() {
 char* Image::getVectorBegin() {
     return this->img.data();
 }
+
+char* Image::getVectorEnd() {
+    return &this->img.back();
+}
+
+void Image::copyImageVector(std::shared_ptr<Image> src) {
+    this->img.assign(src->getVectorBegin(), src->getVectorEnd());
+}

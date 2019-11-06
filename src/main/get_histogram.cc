@@ -6,7 +6,7 @@
 #include <vector>
 
 int main() {
-    std::string image_path = "/home/dionesius/Documents/semester-7/pengcit/PhotoEffect/src/test/resource/bmp_img.bmp";
+    std::string image_path = "/Users/pt.gojekindonesia/Documents/PhotoEffect/src/test/resource/baboon24.bmp";
     std::shared_ptr<Image> image = loadBMPImage(image_path);
 
     Histogram histogram_r(256);

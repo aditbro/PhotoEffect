@@ -9,7 +9,7 @@ const api = {
     image_contrast_stretching: Module.cwrap('image_contrast_stretching', null, ['number', 'number', 'number', 'number']),
     image_intensity_slice: Module.cwrap('image_intensity_slice', null, ['number', 'number', 'number', 'number']),
     image_bit_slice: Module.cwrap('image_bit_slice', null, ['number']),
-    image_edge_detect: Module.cwrap('image_bit_slice', null),
+    image_edge_detect: Module.cwrap('image_edge_detect', null, ['number'])
 };
 
 document.getElementById("selector").addEventListener("change", function() {
@@ -66,7 +66,7 @@ function loadImageToHeap() {
 function reloadImage() {
     var preview = document.querySelector("#preview")
     var ctx = document.querySelector("#myCanvas").getContext("2d")
-    var imgData = new ImageData(preview.width, preview.height * 4)
+    var imgData = new ImageData(preview.width, preview.height * 100)
 
     imgData.data.set(Module.HEAPU8.slice(img_pointer))
 

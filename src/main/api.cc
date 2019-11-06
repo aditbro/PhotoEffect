@@ -62,9 +62,8 @@ extern "C" {
     }
 
     EMSCRIPTEN_KEEPALIVE
-    void image_edge_detect() {
-        std::vector<int> filter = {0,1,0,1,-4,1,0,1,0};
-        std::shared_ptr<Image> img2 = convolute(img, filter);
+    void image_edge_detect(int threshold) {
+        std::shared_ptr<Image> img2 = sobel(img, threshold);
 
         for(int i = 0; i < img2->getHeight(); i++) {
             for(int j = 0; j < img2->getWidth(); j++) {
