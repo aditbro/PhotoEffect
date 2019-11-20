@@ -34,3 +34,11 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [":color", ":image", ":histogram"]
 )
+
+cc_library(
+    name = "ocr",
+    hdrs = ["ocr.h"],
+    srcs = ["ocr.cc"],
+    visibility = ["//visibility:public"],
+    deps = [":color", ":image", ":histogram", ":operators", ":image_loader"]
+)
