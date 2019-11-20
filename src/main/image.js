@@ -9,7 +9,15 @@ const api = {
     image_contrast_stretching: Module.cwrap('image_contrast_stretching', null, ['number', 'number', 'number', 'number']),
     image_intensity_slice: Module.cwrap('image_intensity_slice', null, ['number', 'number', 'number', 'number']),
     image_bit_slice: Module.cwrap('image_bit_slice', null, ['number']),
-    image_edge_detect: Module.cwrap('image_edge_detect', null, ['number'])
+    image_edge_detect: Module.cwrap('image_edge_detect', null, ['number']),
+    image_histogram_normalization: Module.cwrap('image_histogram_normalization', null, null),
+    image_erode: Module.cwrap('image_erode', null, ['number']),
+    image_dilate: Module.cwrap('image_dilate', null, ['number']),
+    image_closing: Module.cwrap('image_closing', null, ['number']),
+    image_opening: Module.cwrap('image_opening', null, ['number']),
+    image_black_hat: Module.cwrap('image_black_hat', null, ['number']),
+    image_top_hat: Module.cwrap('image_top_hat', null, ['number']),
+    image_find_char: Module.cwrap('image_find_char', null, null),
 };
 
 document.getElementById("selector").addEventListener("change", function() {
@@ -66,9 +74,9 @@ function loadImageToHeap() {
 function reloadImage() {
     var preview = document.querySelector("#preview")
     var ctx = document.querySelector("#myCanvas").getContext("2d")
-    var imgData = new ImageData(preview.width, preview.height * 100)
+    var imgData = new ImageData(preview.width, preview.height * 20)
 
-    imgData.data.set(Module.HEAPU8.slice(img_pointer))
+    imgData.data.set(Module.HEAPU8.slice(img_pointer, img_pointer + (preview.width * preview.height * 4)))
 
     ctx.putImageData(imgData, 0, 0)
 }

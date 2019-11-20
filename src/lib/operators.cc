@@ -15,7 +15,7 @@ void getChannelHistogram(std::shared_ptr<Image> &img, int channel, Histogram* hi
     for (int i = 0; i < img->getHeight(); i++) {
         for (int j = 0; j < img->getWidth(); j++) {
             Color col = img->getColorAt(i, j);
-            if (channel == CHAN_R) {
+            if (channel == CHAN_B) {
                 histogram->addValueCount(col.b);
             }
             else if (channel == CHAN_G) {
@@ -61,7 +61,7 @@ void arithmeticOperator(std::shared_ptr<Image> &src1, std::shared_ptr<Image> &sr
         for (int j = 0; j < src1->getWidth(); j++) {
             Color col1 = src1->getColorAt(i, j);
             Color col2 = src2->getColorAt(i, j);
-            unsigned char new_r, new_g, new_b;
+            unsigned int new_r, new_g, new_b;
 
             if (op == OPERATOR_PLUS) {
                 new_r = col1.r + col2.r;
@@ -112,7 +112,7 @@ void scalarOperator(std::shared_ptr<Image> &src, std::shared_ptr<Image> &dst, in
     for (int i = 0; i < src->getHeight(); i++) {
         for (int j = 0; j < src->getWidth(); j++) {
             Color col = src->getColorAt(i, j);
-            unsigned char new_r, new_g, new_b;
+            unsigned int new_r, new_g, new_b;
 
             if (op == OPERATOR_PLUS) {
                 new_r = col.r + scalar;
@@ -771,16 +771,16 @@ void histogramEqualization(std::shared_ptr<Image> &src, std::shared_ptr<Image> &
     std::vector<int> hv_g = histogram_g.getHistogramVector();
     std::vector<int> hv_b = histogram_b.getHistogramVector();
 
-    for (int i = 0; i < histogram_r.getRange(); i++) {
-        hv_r[i] = std::accumulate(hv_r.begin(), hv_r.begin() + i, 0.0);
-        hv_g[i] = std::accumulate(hv_g.begin(), hv_g.begin() + i, 0.0);
-        hv_b[i] = std::accumulate(hv_b.begin(), hv_b.begin() + i, 0.0);
+    for (int i = 1; i < histogram_r.getRange(); i++) {
+        hv_r[i] = hv_r[i-1] + hv_r[i];
+        hv_g[i] = hv_g[i-1] + hv_g[i];
+        hv_b[i] = hv_b[i-1] + hv_b[i];
     }
 
     for (int i = 0; i < histogram_r.getRange(); i++) {
-        hv_r[i] = (int) round((hv_r[i] / img_size) * 256);
-        hv_g[i] = (int) round((hv_g[i] / img_size) * 256);
-        hv_b[i] = (int) round((hv_b[i] / img_size) * 256);
+        hv_r[i] = (int) round(((float)hv_r[i] / img_size) * 255);
+        hv_g[i] = (int) round(((float)hv_g[i] / img_size) * 255);
+        hv_b[i] = (int) round(((float)hv_b[i] / img_size) * 255);
     }
 
     for (int i = 0; i < src->getHeight(); i++) {
