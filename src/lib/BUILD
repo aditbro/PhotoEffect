@@ -42,3 +42,18 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [":color", ":image", ":histogram", ":operators", ":image_loader"]
 )
+
+cc_library(
+    name = "complex",
+    hdrs = ["complex.h"],
+    srcs = ["complex.cc"],
+    visibility = ["//visibility:public"]
+)
+
+cc_library(
+    name = "dft",
+    hdrs = ["dft.h"],
+    srcs = ["dft.cc"],
+    visibility = ["//visibility:public"],
+    deps = [":image", ":complex", ":color"]
+)
