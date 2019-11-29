@@ -38,3 +38,14 @@ cc_binary(
     ]
 )
 
+cc_binary(
+    name = "ocr_test",
+    srcs = ["ocr_test.cc"],
+    deps = [
+        "//lib:image_loader",
+        "//lib:image",
+        "//lib:ocr",
+        "//lib:operators"
+    ]
+)
+

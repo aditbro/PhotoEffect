@@ -2,6 +2,7 @@
 #define IMAGE_H
 
 #include <vector>
+#include <memory>
 #include "color.h"
 
 /*
