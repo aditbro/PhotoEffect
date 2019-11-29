@@ -24,7 +24,9 @@ cc_binary(
         "//lib:image",
         "//lib:image_loader",
         "//lib:histogram",
-        "//lib:operators"
+        "//lib:operators",
+        "//lib:complex",
+        "//lib:dft"
     ]
 )
 

@@ -24,6 +24,11 @@ std::vector< std::vector <Complex> > fft2d(const std::shared_ptr<Image> &img) {
                     (result[y_freq][x_freq]).i -= (img->getColorAt(y_space, x_space).r * sin(2 * PI * ((1.0 * x_freq * x_space / width) + (1.0 * y_freq * y_space / height)))) / sqrt(width * height);
                 }
             }
+
+            std::cout << "(" << x_freq << "," << y_freq << ")\n";
+            std::cout << (result[y_freq][x_freq]).r << " + " << (result[y_freq][x_freq]).i << "i\n";
+            std::cout << "Scalar: " << (result[y_freq][x_freq]).getScalar() << "\n";
+            std::cout << "---\n";
         }
     }
 
@@ -62,7 +67,11 @@ std::shared_ptr<Image> ifft2d(const std::vector<std::vector<Complex>>& frequenci
     {
         for (int j = 0; j < width; j++)
         {
-            unsigned char color = (unsigned char)(result[i][j]).getScalar();
+            float scalar_value = (result[i][j]).getScalar();
+            if (scalar_value > 255) {
+                scalar_value = 255;
+            }
+            unsigned char color = (unsigned char) scalar_value;
             fft_result->setColorAt(i, j, Color(color, color, color));
         }
     }
