@@ -83,4 +83,6 @@ std::shared_ptr<Image> gaussian_blur(std::shared_ptr<Image> &img);
 std::shared_ptr<Image> translate(std::shared_ptr<Image> &img, int di, int dj);
 std::shared_ptr<Image> rotate(std::shared_ptr<Image> &img, int deg);
 std::shared_ptr<Image> flip(std::shared_ptr<Image> &img, bool isX, bool isY);
+
+void Hough(std::shared_ptr<Image> &Edge, int p, int q, int T);
 #endif

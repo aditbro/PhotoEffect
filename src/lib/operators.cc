@@ -894,3 +894,88 @@ std::shared_ptr<Image> flip(std::shared_ptr<Image> &img, bool isX, bool isY) {
     // return transform(img, trans_mat);
     return img2;
 }
+
+void Hough(std::shared_ptr<Image> &Edge, int p, int q, int T){
+    int k, l, i, j, kk, ll;
+    float r, b, y;
+
+    int N = Edge->getWidth();
+    int M = Edge->getHeight();
+    std::vector< std::vector<int> > P;
+
+    float SQRTD =sqrt((float)N*(float)N + (float)M*(float)M);
+    
+    float th, R_TO_D = 0.017453;
+    std::vector<double> COS;
+    std::vector<double> SIN;
+
+    for(i=0;i<=p-1;i++){
+        th = (float)i * 180.0/(p-1)-90.0;
+        th = th * R_TO_D;
+        COS.push_back((double) cos((double)th));
+        SIN.push_back((double) sin((double)th));
+    } 
+
+    P.resize(p);
+    for(int i = 0 ; i < p ; ++i)
+    {
+        //Grow Columns by n
+        P[i].resize(q);
+    }
+
+    for(kk=0;kk<=p-1;kk++)
+        for(ll=0;ll<=q-1;ll++)
+            P[kk][ll]=0;
+/*telusuri citra tepi. Jika pixel merupakan tepi, lakukan pemungutan
+suara pada elemen matriks P yang bersesuaian.
+tetha dari –pi/2 sampai pi/2.
+r dari –sqrt(N*N+M*M) sampai sqrt(N*N+M*M).
+*/
+    for (k=0;k<=N-1;k++){
+        for (l=0;l<=M-1;l++){
+            if (Edge->getColorAt(k,l).r==255){
+                for (i=0;i<=p-1;i++){
+                    r = k*COS[i] + l*SIN[i];
+                    b = SQRTD;
+                    r+=b; 
+                    r/=(SQRTD*2.0); 
+                    r*=(p-1); 
+                    r+=0.5;
+                    j=floor(r);
+                    P[i][j]++;
+                }
+            }
+        }
+    }
+
+    for(i=0;i<p;i++){
+        for(j=0;j<q;j++)
+        if (P[i][j]>T)
+        P[i][j]=1;
+        else
+        P[i][j]=0;
+    }
+
+    for (k=0;k<=p-1;k++){
+        for (l=0;l<=q-1;l++){
+            y=(float)0.0;
+
+            if (P[k][l]==1){ /* atau P[k][l]== 255 */
+                for (i=0;i<=N-1;i++){
+                    r = (float)l * 2.0 * SQRTD/(p-1) - SQRTD;
+                    if (SIN[k]==(float)0.0)
+                        y++;
+                    else
+                        y=(r - (float)i * COS[k])/SIN[k];
+
+                y+=0.5; 
+                j=floor(y);
+                if (j >=0 && j < M)
+                    if (Edge->getColorAt(k,l).r==255){
+                        Edge->setColorAt(i,j, Color(255,0,0));
+                    }
+                }   
+            }
+        }
+    }
+}
